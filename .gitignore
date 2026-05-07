@@ -1,2 +1,5 @@
+# build files
 build/*
 *.o
+# LSP related
+compile_commands.json

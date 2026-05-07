@@ -1,5 +1,8 @@
 #include "constant.h"
+#include "network.h"
+#include <bits/pthreadtypes.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -33,20 +36,15 @@ int main() {
   listen(s, 10);
 
   puts("Waiting for incoming connection...");
+  pthread_t c;
   while ((client_fd = accept(s, 0, 0))) {
-    recv(client_fd, buffer, 1024, 0);
-    send(client_fd, response, sizeof(response), 0);
-
-    close(client_fd);
+    if ((c = pthread_create(&c, NULL, handle_connection, (void *)&client_fd) !=
+             0)) {
+      perror("Error during thread creation");
+    }
   }
 
   close(s);
 
   return 0;
-}
-
-void *handle_connection(void *client_s) {
-  int s = *(int *)client_s;
-
-  return NULL;
 }
