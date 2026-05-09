@@ -20,3 +20,4 @@ void init_mq();
 void cleanup_mq();
 void message_queue_push(const message_packet_t *packet);
 message_packet_t message_queue_pop();
+void *message_consumer_thread(__attribute__((unused)) void *arg);

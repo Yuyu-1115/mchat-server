@@ -46,10 +46,10 @@ int32_t remove_client(const int client_fd) {
   return FAILED;
 }
 
-void broadcast(const int client_fd, const message_packet_t *packet) {
+void broadcast(const message_packet_t *packet) {
   pthread_mutex_lock(&cl.mutex);
   for (size_t i = 0; i < MAX_CLIENT_NUM; ++i) {
-    if (cl.clients[i] != -1 && cl.clients[i] != client_fd) {
+    if (cl.clients[i] != -1) {
       if (send(cl.clients[i], packet, sizeof(message_packet_t), 0) == -1) {
         remove_client(cl.clients[i]);
       }

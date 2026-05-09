@@ -18,4 +18,4 @@ void init_cl();
 void cleanup_cl();
 int32_t add_client(const int client_fd);
 int32_t remove_client(const int client_fd);
-void broadcast(const int client_fd, const message_packet_t *packet);
+void broadcast(const message_packet_t *packet);

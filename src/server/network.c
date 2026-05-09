@@ -51,7 +51,7 @@ int initialize_socket() {
 }
 
 void *handle_connection(void *client_s) {
-  int s = *(int *)client_s;
+  int s = (int)(intptr_t)client_s;
   int read_size;
   message_packet_t packet;
   char *buffer = (char *)&packet;
