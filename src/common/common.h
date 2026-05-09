@@ -1,0 +1,15 @@
+#pragma once
+#include <stdint.h>
+
+enum {
+  MAX_MESSAGE = 1024,
+  MAX_USERNAME = 32,
+};
+
+typedef enum { PKT_TYPE_JOIN, PKT_TYPE_CHAT, PKT_TYPE_EXIT } packet_type_t;
+
+typedef struct {
+  int32_t type;
+  char username[MAX_USERNAME];
+  char content[MAX_MESSAGE];
+} message_packet_t;
