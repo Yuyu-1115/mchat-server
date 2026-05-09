@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+static message_queue_t mq;
+
 void init_mq() {
   mq.size = 0;
   mq.head = 0;

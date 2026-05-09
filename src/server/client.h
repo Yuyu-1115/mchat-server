@@ -12,8 +12,6 @@ typedef struct {
   pthread_mutex_t mutex;
 } client_list_t;
 
-static client_list_t cl;
-
 void init_cl();
 void cleanup_cl();
 int32_t add_client(const int client_fd);
