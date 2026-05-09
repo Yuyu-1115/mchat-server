@@ -53,10 +53,8 @@ message_packet_t message_queue_pop() {
 
 void *message_consumer_thread(__attribute__((unused)) void *arg) {
   while (1) {
-    while (mq.size > 0) {
-      message_packet_t packet = message_queue_pop();
-      broadcast(&packet);
-    }
+    message_packet_t packet = message_queue_pop();
+    broadcast(&packet);
   }
   return NULL;
 }
