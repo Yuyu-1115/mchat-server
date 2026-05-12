@@ -2,6 +2,7 @@
 #include "server/client.h"
 #include "server/message_queue.h"
 #include <errno.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stddef.h>
@@ -39,7 +40,7 @@ int initialize_socket() {
   size_t size_addr = sizeof(struct sockaddr_in);
 
   if (bind(s, (struct sockaddr *)&addr, size_addr) < 0) {
-    puts("Failed to bind sockets.");
+    printf("Failed to bind sockets., %s", gai_strerror(errno));
     close(s);
     exit(1);
   }
@@ -52,24 +53,18 @@ int initialize_socket() {
 
 void *handle_connection(void *client_s) {
   int s = (int)(intptr_t)client_s;
-  int read_size;
   message_packet_t packet;
-  char *buffer = (char *)&packet;
+  message_packet_t test = {
+      .type = PKT_TYPE_CHAT, .username = "Server", .content = "Welcome!"};
 
+  add_client(s);
+  send(s, &test, sizeof(message_packet_t), 0);
   while (1) {
-    size_t curr_p = 0;
-    while (curr_p < sizeof(message_packet_t)) {
-      read_size = recv(s, buffer + curr_p, sizeof(buffer) - curr_p, 0);
-      if (read_size < 0) {
-        puts("Error during receving packets from clients");
-        goto connection_closed;
-      }
-      curr_p += read_size;
-    }
+    recv_packet(s, &packet);
     message_queue_push(&packet);
+    printf("[%s]%s\n", packet.username, packet.content);
   }
 
-connection_closed:
   remove_client(s);
   close(s);
   return NULL;

@@ -1,6 +1,6 @@
 #pragma once
 #include "common/common.h"
-#include <bits/pthreadtypes.h>
+#include <pthread.h>
 #include <stddef.h>
 
 enum { MESSAGE_QUEUE_SIZE = 100 };
@@ -13,8 +13,6 @@ typedef struct {
   pthread_mutex_t mutex;
   pthread_cond_t cond;
 } message_queue_t;
-
-static message_queue_t mq;
 
 void init_mq();
 void cleanup_mq();

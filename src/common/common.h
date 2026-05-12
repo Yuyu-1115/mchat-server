@@ -13,3 +13,6 @@ typedef struct {
   char username[MAX_USERNAME];
   char content[MAX_MESSAGE];
 } message_packet_t;
+
+void send_packet(int s, message_packet_t *packet);
+void recv_packet(int s, message_packet_t *packet);

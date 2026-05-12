@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
+static client_list_t cl;
+
 void init_cl() {
   cl.size = 0;
   for (size_t i = 0; i < MAX_CLIENT_NUM; ++i) {
