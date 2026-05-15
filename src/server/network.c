@@ -53,16 +53,23 @@ int initialize_socket() {
 
 void *handle_connection(void *client_s) {
   int s = (int)(intptr_t)client_s;
+  char message_buffer[sizeof(message_packet_t)] = {0};
   message_packet_t packet;
-  message_packet_t test = {
+  message_packet_t onboard = {
       .type = PKT_TYPE_CHAT, .username = "Server", .content = "Welcome!"};
 
   add_client(s);
-  send(s, &test, sizeof(message_packet_t), 0);
+  send_packet(s, &onboard);
   while (1) {
-    recv_packet(s, &packet);
+    if (recv_packet(s, &packet) == -1) {
+      break;
+    }
     message_queue_push(&packet);
-    printf("[%s]%s\n", packet.username, packet.content);
+    format_message(message_buffer, &packet);
+    printf("%s", message_buffer);
+    if (packet.type == PKT_TYPE_EXIT) {
+      break;
+    }
   }
 
   remove_client(s);
