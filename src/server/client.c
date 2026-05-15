@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <sys/socket.h>
+#include <unistd.h>
 
 static client_list_t cl;
 
@@ -52,8 +52,13 @@ void broadcast(const message_packet_t *packet) {
   pthread_mutex_lock(&cl.mutex);
   for (size_t i = 0; i < MAX_CLIENT_NUM; ++i) {
     if (cl.clients[i] != -1) {
-      if (send(cl.clients[i], packet, sizeof(message_packet_t), 0) == -1) {
-        remove_client(cl.clients[i]);
+      int client_fd = cl.clients[i];
+      if (send_packet(client_fd, packet) == -1) {
+        close(client_fd);
+        cl.clients[i] = -1;
+        if (cl.size > 0) {
+          cl.size--;
+        }
       }
     }
   }

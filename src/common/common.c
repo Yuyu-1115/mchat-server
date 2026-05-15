@@ -3,28 +3,60 @@
 #include <netdb.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/socket.h>
 
-void send_packet(int s, message_packet_t *packet) {
+const char *template_chat = "[%s] %s\n";
+const char *template_join = "%s has joined the chat.\n";
+const char *template_exit = "%s has left the chat.\n";
+
+int send_packet(int s, const message_packet_t *packet) {
   size_t curr_p = 0;
-  int read_size = 0;
+  ssize_t sent_size = 0;
+  const char *buffer = (const char *)packet;
   while (curr_p < sizeof(message_packet_t)) {
-    read_size = send(s, packet + curr_p, sizeof(message_packet_t) - curr_p, 0);
-    if (read_size < 0) {
-      printf("Error during receving packets from clients: %s",
-             gai_strerror(errno));
+    sent_size = send(s, buffer + curr_p, sizeof(message_packet_t) - curr_p, 0);
+    if (sent_size <= 0) {
+      if (sent_size < 0) {
+        fprintf(stderr, "Error while sending packet: %s\n", strerror(errno));
+      } else {
+        fprintf(stderr, "Peer closed connection while sending packet.\n");
+      }
+      return -1;
     }
-    curr_p += read_size;
+    curr_p += (size_t)sent_size;
   }
+  return 0;
 }
-void recv_packet(int s, message_packet_t *packet) {
+int recv_packet(int s, message_packet_t *packet) {
   size_t curr_p = 0;
-  int read_size = 0;
+  ssize_t read_size = 0;
+  char *buffer = (char *)packet;
   while (curr_p < sizeof(message_packet_t)) {
-    read_size = recv(s, packet + curr_p, sizeof(message_packet_t) - curr_p, 0);
-    if (read_size < 0) {
-      printf("Error during receving packets from clients: %s",
-             gai_strerror(errno));
+    read_size = recv(s, buffer + curr_p, sizeof(message_packet_t) - curr_p, 0);
+    if (read_size <= 0) {
+      if (read_size < 0) {
+        fprintf(stderr, "Error while receiving packet: %s\n", strerror(errno));
+      } else {
+        fprintf(stderr, "Peer closed connection while receiving packet.\n");
+      }
+      return -1;
     }
-    curr_p += read_size;
+    curr_p += (size_t)read_size;
+  }
+  return 0;
+}
+
+void format_message(char *buffer, message_packet_t *packet) {
+  switch (packet->type) {
+  case PKT_TYPE_JOIN:
+    sprintf(buffer, template_join, packet->username);
+    break;
+  case PKT_TYPE_EXIT:
+    sprintf(buffer, template_exit, packet->username);
+    break;
+  case PKT_TYPE_CHAT:
+    sprintf(buffer, template_chat, packet->username, packet->content);
+    break;
   }
 }

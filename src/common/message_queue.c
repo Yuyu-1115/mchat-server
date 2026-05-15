@@ -1,6 +1,5 @@
-#include "server/message_queue.h"
+#include "common/message_queue.h"
 #include "common/common.h"
-#include "server/client.h"
 #include <pthread.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -51,12 +50,4 @@ message_packet_t message_queue_pop() {
   --mq.size;
   pthread_mutex_unlock(&mq.mutex);
   return packet;
-}
-
-void *message_consumer_thread(__attribute__((unused)) void *arg) {
-  while (1) {
-    message_packet_t packet = message_queue_pop();
-    broadcast(&packet);
-  }
-  return NULL;
 }

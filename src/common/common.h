@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 enum {
-  MAX_MESSAGE = 1024,
+  MAX_MESSAGE = 512,
   MAX_USERNAME = 32,
 };
 
@@ -14,5 +14,6 @@ typedef struct {
   char content[MAX_MESSAGE];
 } message_packet_t;
 
-void send_packet(int s, message_packet_t *packet);
-void recv_packet(int s, message_packet_t *packet);
+int send_packet(int s, const message_packet_t *packet);
+int recv_packet(int s, message_packet_t *packet);
+void format_message(char *buffer, message_packet_t *packet);
