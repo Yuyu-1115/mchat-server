@@ -1,5 +1,7 @@
 #include "message.h"
+#include "common/common.h"
 #include <pthread.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 list_t message_list;
@@ -35,6 +37,7 @@ void add_node(message_packet_t *val) {
     temp->next = node;
     node->prev = temp;
   }
+  ++message_list.size;
   pthread_cond_signal(&message_list.cond);
   pthread_mutex_unlock(&message_list.mutex);
 }
@@ -43,11 +46,16 @@ void pop_node() {
   while (message_list.size == 0) {
     pthread_cond_wait(&message_list.cond, &message_list.mutex);
   }
-  if (message_list.size != 0) {
-    node_t *temp = message_list.head;
-    message_list.head = temp->next;
-    message_list.head->prev = NULL;
-    free(temp);
-  }
+  node_t *temp = message_list.head;
+  message_list.head = message_list.head->next;
+  free(temp);
+  --message_list.size;
   pthread_mutex_unlock(&message_list.mutex);
 }
+
+const node_t *peek_node(size_t index) {
+  pthread_mutex_lock(&message_list.mutex);
+  pthread_mutex_unlock(&message_list.mutex);
+}
+
+const node_t *get_head() { return message_list.head; }

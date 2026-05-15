@@ -22,3 +22,4 @@ void init_message_list();
 node_t *new_node(message_packet_t *val);
 void add_node(message_packet_t *val);
 void pop_node();
+const node_t *get_head();
