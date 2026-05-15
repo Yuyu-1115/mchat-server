@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 enum {
-  MAX_MESSAGE = 1024,
+  MAX_MESSAGE = 512,
   MAX_USERNAME = 32,
 };
 
