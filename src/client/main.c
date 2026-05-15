@@ -4,7 +4,6 @@
 #include "common/common.h"
 #include "common/message_queue.h"
 #include "network.h"
-#include <_time.h>
 #include <ncurses.h>
 #include <netdb.h>
 #include <pthread.h>
@@ -18,6 +17,9 @@
 pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t tui_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_t comm_thread;
+
+// some dirty workaround
+extern WINDOW *chatscr, *textscr;
 
 void init(const char *username) {
   init_mq();
@@ -73,7 +75,11 @@ int main(int arg, char *argv[]) {
     add_node(&packet);
     format_message(message_buffer, &packet);
     pthread_mutex_unlock(&data_mutex);
-    printf("[%s] %s\n", buffer.username, buffer.content);
+    pthread_mutex_lock(&tui_mutex);
+    wprintw(chatscr, "%s", message_buffer);
+    wrefresh(chatscr);
+    wrefresh(textscr);
+    pthread_mutex_unlock(&tui_mutex);
   }
 
   freeaddrinfo(res);
