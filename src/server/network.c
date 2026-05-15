@@ -1,6 +1,6 @@
 #include "common/common.h"
+#include "common/message_queue.h"
 #include "server/client.h"
-#include "server/message_queue.h"
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -67,5 +67,13 @@ void *handle_connection(void *client_s) {
 
   remove_client(s);
   close(s);
+  return NULL;
+}
+
+void *message_consumer_thread(__attribute__((unused)) void *arg) {
+  while (1) {
+    message_packet_t packet = message_queue_pop();
+    broadcast(&packet);
+  }
   return NULL;
 }

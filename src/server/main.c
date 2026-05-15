@@ -1,6 +1,6 @@
+#include "common/message_queue.h"
 #include "network.h"
 #include "server/client.h"
-#include "server/message_queue.h"
 #include <netinet/in.h>
 #include <pthread.h>
 #include <signal.h>
