@@ -76,7 +76,7 @@ void init_tui(const char *username) {
   keypad(textscr, TRUE);
   box(textscr, 0, 0);
 
-  scrollok(textscr, TRUE);
+  scrollok(chatscr, TRUE);
   box(chat_container, 0, 0);
   wrefresh(chat_container);
 
