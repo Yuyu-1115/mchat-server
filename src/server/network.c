@@ -60,9 +60,14 @@ void *handle_connection(void *client_s) {
   add_client(s);
   send(s, &test, sizeof(message_packet_t), 0);
   while (1) {
-    recv_packet(s, &packet);
+    if (recv_packet(s, &packet) == -1) {
+      break;
+    }
     message_queue_push(&packet);
     printf("[%s]%s\n", packet.username, packet.content);
+    if (packet.type == PKT_TYPE_EXIT) {
+      break;
+    }
   }
 
   remove_client(s);
