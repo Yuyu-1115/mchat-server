@@ -20,7 +20,7 @@ void send_packet(int s, message_packet_t *packet) {
     curr_p += read_size;
   }
 }
-void recv_packet(int s, message_packet_t *packet) {
+int recv_packet(int s, message_packet_t *packet) {
   size_t curr_p = 0;
   int read_size = 0;
   while (curr_p < sizeof(message_packet_t)) {
@@ -28,9 +28,11 @@ void recv_packet(int s, message_packet_t *packet) {
     if (read_size < 0) {
       printf("Error during receving packets from clients: %s",
              gai_strerror(errno));
+      return -1;
     }
     curr_p += read_size;
   }
+  return 0;
 }
 
 void format_message(char *buffer, message_packet_t *packet) {

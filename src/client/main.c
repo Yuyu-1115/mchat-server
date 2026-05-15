@@ -42,7 +42,7 @@ int main(int arg, char *argv[]) {
   }
 
   char *username = argv[2];
-  message_packet_t packet, buffer;
+  message_packet_t packet;
   struct addrinfo hint, *res;
   char message_buffer[sizeof(message_packet_t)] = {0};
 
@@ -64,13 +64,23 @@ int main(int arg, char *argv[]) {
     fprintf(stderr, "Unable to connect to %s\n", argv[1]);
     exit(1);
   } else {
-    printf("Successfully connected to %s\n", argv[1]);
+    pthread_mutex_lock(&tui_mutex);
+    wprintw(chatscr, "Successfully connected to %s\n", argv[1]);
+    wrefresh(chatscr);
+    wrefresh(textscr);
+    pthread_mutex_unlock(&tui_mutex);
   }
 
   pthread_create(&comm_thread, NULL, communicate_thread, (void *)(intptr_t)s);
 
   while (1) {
-    recv_packet(s, &packet);
+    if (recv_packet(s, &packet) == -1) {
+      pthread_mutex_lock(&tui_mutex);
+      wprintw(chatscr, "--- Server Disconnected ---");
+      wrefresh(chatscr);
+      pthread_mutex_unlock(&tui_mutex);
+      break;
+    }
     pthread_mutex_lock(&data_mutex);
     add_node(&packet);
     format_message(message_buffer, &packet);
