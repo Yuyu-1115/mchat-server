@@ -6,7 +6,7 @@ CLIENT_EXEC := mchat_client
 CC = gcc
 CFLAGS = -g -Wall -Wextra -MMD -MP
 CPPFLAGS = -Isrc
-LDFLAGS = -lpthread
+LDFLAGS = -lpthread -lncurses
 
 CLIENT_SRC := $(wildcard src/client/*.c)
 SERVER_SRC := $(wildcard src/server/*.c)
